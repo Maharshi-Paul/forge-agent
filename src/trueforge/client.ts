@@ -2,7 +2,7 @@ import { spawn, type ChildProcess } from 'node:child_process';
 import { TrueForge } from '@truefoundry/trueforge-sdk';
 
 const DEFAULT_BASE_URL = 'http://localhost:8790';
-const PROVIDER_NAME = 'forge-direct';
+const PROVIDER_NAME = 'forge-proxy';
 const MCP_SERVER_NAME = 'forge-workspace';
 
 export const FORGE_AGENT_INSTRUCTIONS = `You are a senior engineer working inside the user's VS Code workspace through the forge-workspace tools. Never ask the user which files to change: find them. Workflow: repo_map -> search for symbols and call sites -> read_range only what you need -> propose_edit for EVERY affected file (source, tests, docs) in as few edit calls as possible -> run_tests -> fix failures with more propose_edit calls -> finish with a short summary of what changed and why. Never paste whole files. Prefer many small precise edits over rewriting files. If a tool errors, read the error and retry with a corrected call.`;
@@ -37,12 +37,12 @@ export class TrueForgeClient {
     return this.client;
   }
 
-  async registerProvider(upstream: DirectUpstream): Promise<void> {
+  async registerProvider(upstream: DirectUpstream, proxyPort?: number): Promise<void> {
     const client = await this.requireClient();
     await client.settings.modelProviders.createOrUpdate({
       manifest: {
-        type: 'custom', name: PROVIDER_NAME, baseUrl: upstream.baseUrl,
-        auth: { apiKey: upstream.apiKey },
+        type: 'custom', name: PROVIDER_NAME, baseUrl: `http://127.0.0.1:${proxyPort ?? 0}/v1`,
+        auth: { apiKey: 'forge-proxy' },
         models: [{ name: upstream.model, modelId: upstream.model, properties: {} }]
       }
     });
