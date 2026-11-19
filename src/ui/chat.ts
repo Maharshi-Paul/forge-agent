@@ -9,6 +9,7 @@ export class ForgeChat implements vscode.Disposable {
   private sessionId?: string;
   private busy = false;
   private proxy?: RunningProxy;
+  private mcpUrl?: string;
   private readonly upstreamStatus = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
   constructor(private readonly client: TrueForgeClient, private readonly output: vscode.OutputChannel, private readonly review: ReviewController, private readonly secrets: vscode.SecretStorage) { this.upstreamStatus.text = 'Forge: idle'; this.upstreamStatus.show(); }
   register(context: vscode.ExtensionContext): void { context.subscriptions.push(this, this.upstreamStatus, vscode.commands.registerCommand('forge.openChat', () => this.open()), vscode.commands.registerCommand('forge.stop', () => this.stop()), vscode.commands.registerCommand('forge.configureSecret', () => this.configureSecret())); }
@@ -21,7 +22,7 @@ export class ForgeChat implements vscode.Disposable {
       const upstreams = await this.readUpstreams();
       if (!upstreams) return;
       const upstream = upstreams[0];
-      if (!this.sessionId) { this.proxy = await startProxy({ upstreams, log: (message) => this.output.appendLine(message) }); await this.client.ensureServer(); await this.client.registerProvider(upstream, this.proxy.port); this.sessionId = await this.client.createSession(upstream); }
+      if (!this.sessionId) { if (!this.mcpUrl) throw new Error('Workspace MCP server is not ready. Reload the window and try again.'); this.proxy = await startProxy({ upstreams, log: (message) => this.output.appendLine(message) }); await this.client.ensureServer(); await this.client.registerProvider(upstream, this.proxy.port); await this.client.registerMcp(this.mcpUrl); this.sessionId = await this.client.createSession(upstream); }
       this.upstreamStatus.text = `Forge: ${upstream.model}`;
       this.output.appendLine(`\n> ${text}`);
       for await (const event of this.client.runTurn(this.sessionId, text)) {
@@ -36,6 +37,7 @@ export class ForgeChat implements vscode.Disposable {
   async stop(): Promise<void> { if (this.sessionId && this.busy) { await this.client.cancel(this.sessionId); this.output.appendLine('\n[stopped]'); } }
   private async configureSecret(): Promise<void> { const settings = vscode.workspace.getConfiguration('forge').get<UpstreamSetting[]>('upstreams') ?? []; const choices = settings.map((item) => ({ label: item.name, description: item.secretKey })); const picked = await vscode.window.showQuickPick(choices, { placeHolder: 'Choose the upstream key to store securely' }); if (!picked) return; const key = await vscode.window.showInputBox({ prompt: `API key for ${picked.description}`, password: true, ignoreFocusOut: true }); if (!key) return; await this.secrets.store(picked.description!, key); this.output.appendLine(`[configuration] Stored ${picked.description} in VS Code SecretStorage.`); vscode.window.showInformationMessage(`Stored ${picked.description} securely.`); }
   togglePrimaryFailure(): boolean | undefined { return this.proxy?.togglePrimaryFailure(); }
+  setMcpUrl(url: string): void { this.mcpUrl = url; }
   private async readUpstreams(): Promise<Upstream[] | undefined> { const settings = vscode.workspace.getConfiguration('forge').get<UpstreamSetting[]>('upstreams') ?? []; if (!settings.length) { this.output.appendLine('[configuration] Set forge.upstreams to an ordered array of { name, baseUrl, model, secretKey }, then store each key in VS Code SecretStorage.'); vscode.window.showWarningMessage('Forge Agent is not configured. See the Forge Agent Output Channel.'); return; } const upstreams: Upstream[] = []; for (const setting of settings) { const apiKey = await this.secrets.get(setting.secretKey) ?? process.env[setting.secretKey]; if (!apiKey) { this.output.appendLine(`[configuration] Missing SecretStorage key: ${setting.secretKey}`); vscode.window.showWarningMessage(`Forge Agent requires SecretStorage key ${setting.secretKey}.`); return; } upstreams.push({ ...setting, apiKey }); } return upstreams; }
   dispose(): void { void this.proxy?.close(); this.client.dispose(); }
 }

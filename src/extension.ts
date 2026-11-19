@@ -32,6 +32,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
         log: (message) => output.appendLine(message)
       });
       output.appendLine(`Workspace MCP server listening at ${mcp.url}`);
+      chat.setMcpUrl(mcp.url);
       context.subscriptions.push({ dispose: () => void mcp.close() });
     } catch (error) {
       output.appendLine(`Failed to start workspace MCP server: ${error instanceof Error ? error.message : String(error)}`);
