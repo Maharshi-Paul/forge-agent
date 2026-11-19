@@ -162,6 +162,7 @@ dist/
 .env
 flask/
 .vscode-test/
+.vscode/settings.json
 dist/
 *.vsix
 node_modules/
