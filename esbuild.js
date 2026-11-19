@@ -7,7 +7,7 @@ const options = {
   absWorkingDir: __dirname,
   entryPoints: [path.join(__dirname, 'src', 'extension.ts')],
   bundle: true,
-  external: ['vscode'],
+  external: ['vscode', '@vscode/ripgrep'],
   format: 'cjs',
   platform: 'node',
   target: 'node22',

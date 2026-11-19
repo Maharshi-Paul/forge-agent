@@ -8,7 +8,6 @@ import { createInterface } from 'node:readline';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
-import { rgPath } from '@vscode/ripgrep';
 import * as z from 'zod/v4';
 import { ChangeSet, ChangeSetError, type TextEdit } from '../changes/changeset';
 
@@ -231,7 +230,7 @@ async function searchWorkspace(context: WorkspaceToolContext, query: string, glo
   if (!regex) args.push('--fixed-strings');
   if (glob) args.push('--glob', glob);
   args.push('--', query, '.');
-  const output = await collectProcess(rgPath, args, context.workspaceRoot, max);
+  const output = await collectProcess(await getRipgrepPath(), args, context.workspaceRoot, max);
   if (output.status !== 0 && output.status !== 1) {
     return `search failed: ${output.stderr.trim() || `ripgrep exited with ${output.status}`}`;
   }
@@ -446,4 +445,9 @@ function sendRpcError(response: ServerResponse, status: number, message: string)
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
+}
+
+async function getRipgrepPath(): Promise<string> {
+  // Keep this ESM-only dependency external to the CommonJS extension bundle.
+  return (await import('@vscode/ripgrep')).rgPath;
 }

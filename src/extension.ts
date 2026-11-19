@@ -15,8 +15,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
 
   const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
   if (workspaceRoot) {
+    const changeSet = new ChangeSet();
+    const review = new ReviewController(vscode.Uri.file(workspaceRoot), changeSet);
+    review.register(context);
+    const chat = new ForgeChat(new TrueForgeClient({ log: (message) => output.appendLine(message) }), output, review, context.secrets);
+    chat.register(context);
+    context.subscriptions.push(vscode.commands.registerCommand('forge.breakPrimary', async () => {
+      const active = chat.togglePrimaryFailure();
+      if (active === undefined) { output.appendLine('[proxy] Start a configured chat before toggling the primary model.'); return; }
+      output.appendLine(`[proxy] primary fault injection ${active ? 'enabled' : 'disabled'}`);
+    }));
     try {
-      const changeSet = new ChangeSet();
       const mcp = await startMcpServer({
         workspaceRoot,
         changeSet,
@@ -24,13 +33,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       });
       output.appendLine(`Workspace MCP server listening at ${mcp.url}`);
       context.subscriptions.push({ dispose: () => void mcp.close() });
-      const review = new ReviewController(vscode.Uri.file(workspaceRoot), changeSet); review.register(context);
-      const chat = new ForgeChat(new TrueForgeClient({ log: (message) => output.appendLine(message) }), output, review, context.secrets); chat.register(context);
-      context.subscriptions.push(vscode.commands.registerCommand('forge.breakPrimary', async () => {
-        const active = chat.togglePrimaryFailure();
-        if (active === undefined) { output.appendLine('[proxy] Start a configured chat before toggling the primary model.'); return; }
-        output.appendLine(`[proxy] primary fault injection ${active ? 'enabled' : 'disabled'}`);
-      }));
     } catch (error) {
       output.appendLine(`Failed to start workspace MCP server: ${error instanceof Error ? error.message : String(error)}`);
     }
