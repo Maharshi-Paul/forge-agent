@@ -1,0 +1,54 @@
+{
+  "name": "forge-agent",
+  "displayName": "Forge Agent",
+  "description": "A TrueForge-powered coding agent for VS Code.",
+  "version": "0.0.1",
+  "publisher": "maharshipaul",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Maharshi-Paul/forge-agent.git"
+  },
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:forge.openChat",
+    "onCommand:forge.reviewChanges",
+    "onCommand:forge.breakPrimary"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "forge.openChat",
+        "title": "Forge: Open Chat"
+      },
+      {
+        "command": "forge.reviewChanges",
+        "title": "Forge: Review Changes"
+      },
+      {
+        "command": "forge.breakPrimary",
+        "title": "Forge: Break Primary Model"
+      }
+    ]
+  },
+  "scripts": {
+    "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
+    "test": "vitest run",
+    "package": "npm run build && vsce package --no-dependencies"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/vscode": "^1.95.0",
+    "@vscode/vsce": "^3.2.1",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

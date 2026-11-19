@@ -162,3 +162,6 @@ dist/
 .env
 flask/
 .vscode-test/
+dist/
+*.vsix
+node_modules/
