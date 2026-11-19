@@ -1,12 +1,29 @@
 import * as vscode from 'vscode';
+import { startMcpServer } from './mcp/server';
 
 const OUTPUT_CHANNEL_NAME = 'Forge Agent';
 
-export function activate(context: vscode.ExtensionContext): void {
+export async function activate(context: vscode.ExtensionContext): Promise<void> {
   const output = vscode.window.createOutputChannel(OUTPUT_CHANNEL_NAME);
   context.subscriptions.push(output);
 
   output.appendLine('Forge Agent activated.');
+
+  const workspaceRoot = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+  if (workspaceRoot) {
+    try {
+      const mcp = await startMcpServer({
+        workspaceRoot,
+        log: (message) => output.appendLine(message)
+      });
+      output.appendLine(`Workspace MCP server listening at ${mcp.url}`);
+      context.subscriptions.push({ dispose: () => void mcp.close() });
+    } catch (error) {
+      output.appendLine(`Failed to start workspace MCP server: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  } else {
+    output.appendLine('No workspace folder is open; workspace MCP server was not started.');
+  }
 
   context.subscriptions.push(
     vscode.commands.registerCommand('forge.openChat', async () => {
