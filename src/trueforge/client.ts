@@ -41,8 +41,8 @@ export class TrueForgeClient {
     const client = await this.requireClient();
     await client.settings.modelProviders.createOrUpdate({
       manifest: {
-        type: 'custom', name: PROVIDER_NAME, baseUrl: `http://127.0.0.1:${proxyPort ?? 0}/v1`,
-        auth: { apiKey: 'forge-proxy' },
+        type: 'custom', name: PROVIDER_NAME, baseUrl: proxyPort ? `http://127.0.0.1:${proxyPort}/v1` : upstream.baseUrl,
+        auth: { apiKey: proxyPort ? 'forge-proxy' : upstream.apiKey },
         models: [{ name: upstream.model, modelId: upstream.model, properties: {} }]
       }
     });

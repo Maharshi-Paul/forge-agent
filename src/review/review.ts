@@ -16,7 +16,7 @@ export class ReviewController implements vscode.Disposable, vscode.CodeLensProvi
     this.status.command = 'forge.reviewChanges';
   }
   register(context: vscode.ExtensionContext): void {
-    context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(SCHEME, this.provider), vscode.languages.registerCodeLensProvider({ scheme: SCHEME }, this), this.status, this);
+    context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(SCHEME, this.provider), vscode.languages.registerCodeLensProvider({ scheme: SCHEME }, this), this.status, this, vscode.commands.registerCommand('forge.reviewChanges', () => this.open()));
     context.subscriptions.push(vscode.commands.registerCommand('forge.acceptHunk', (path, id) => this.set(path, id, 'accepted')),
       vscode.commands.registerCommand('forge.rejectHunk', (path, id) => this.set(path, id, 'rejected')),
       vscode.commands.registerCommand('forge.acceptFile', (path) => this.all(path, 'accepted')),

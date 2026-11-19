@@ -32,11 +32,11 @@ describe('workspace MCP server', () => {
     const search = await client.callTool({ name: 'search', arguments: { query: 'OUTPUT_CHANNEL_NAME' } });
     expect(search.content).toMatchObject([{ type: 'text', text: expect.stringContaining('src/extension.ts') }]);
     const range = await client.callTool({ name: 'read_range', arguments: { path: 'README.md', start: 1, end: 1 } });
-    expect(range.content).toMatchObject([{ type: 'text', text: '1: # forge-agent' }]);
+    expect(range.content).toMatchObject([{ type: 'text', text: '1: # Forge Agent' }]);
 
     const result = await client.callTool({
       name: 'propose_edit',
-      arguments: { path: 'README.md', edits: [{ old: '# forge-agent', new: '# changed only in memory' }] }
+      arguments: { path: 'README.md', edits: [{ old: '# Forge Agent', new: '# changed only in memory' }] }
     });
     expect(result.content).toMatchObject([{ type: 'text', text: expect.stringContaining('Queued 1 hunk') }]);
     expect(await readFile(resolve(workspaceRoot, 'README.md'), 'utf8')).toBe(original);

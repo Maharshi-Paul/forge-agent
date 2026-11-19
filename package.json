@@ -34,8 +34,13 @@
       {
         "command": "forge.breakPrimary",
         "title": "Forge: Break Primary Model"
+      },
+      {
+        "command": "forge.stop",
+        "title": "Forge: Stop"
       }
-    ]
+    ],
+    "configuration": { "title": "Forge Agent", "properties": { "forge.upstreams": { "type": "array", "default": [], "description": "Ordered OpenAI-compatible upstreams. Each item has name, baseUrl, model, and a SecretStorage secretKey.", "items": { "type": "object", "required": ["name", "baseUrl", "model", "secretKey"], "properties": { "name": { "type": "string" }, "baseUrl": { "type": "string" }, "model": { "type": "string" }, "secretKey": { "type": "string" } } } } } }
   },
   "scripts": {
     "build": "node esbuild.js",
