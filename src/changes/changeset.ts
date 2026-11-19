@@ -98,6 +98,20 @@ export class ChangeSet {
   pendingHunkCount(): number {
     return [...this.files.values()].reduce((count, file) => count + file.hunks.length, 0);
   }
+
+  setHunkStatus(path: string, hunkId: string, status: ChangeHunk['status']): void {
+    const file = this.files.get(path);
+    if (!file) throw new ChangeSetError(`No proposed changes for ${path}.`);
+    const hunks = file.hunks.map((hunk) => hunk.id === hunkId ? { ...hunk, status } : hunk);
+    if (!hunks.some((hunk) => hunk.id === hunkId)) throw new ChangeSetError(`Unknown hunk ${hunkId}.`);
+    this.files.set(path, { ...file, hunks });
+  }
+
+  setAllStatuses(path: string, status: ChangeHunk['status']): void {
+    const file = this.files.get(path);
+    if (!file) throw new ChangeSetError(`No proposed changes for ${path}.`);
+    this.files.set(path, { ...file, hunks: file.hunks.map((hunk) => ({ ...hunk, status })) });
+  }
 }
 
 function countOccurrences(text: string, needle: string): number {

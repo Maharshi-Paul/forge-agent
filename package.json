@@ -54,7 +54,9 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
     "@truefoundry/trueforge-sdk": "^0.185.0",
+    "@types/diff": "^7.0.2",
     "@vscode/ripgrep": "^1.18.0",
+    "diff": "^9.0.0",
     "jsonrepair": "^3.15.0",
     "zod": "^4.6.7"
   }
