@@ -25,7 +25,10 @@ export class TrueForgeClient {
     const baseUrl = this.options.baseUrl ?? DEFAULT_BASE_URL;
     if (!(await isReachable(baseUrl))) {
       this.options.log?.('[trueforge] starting local server');
-      this.spawned = spawn('npx', ['--yes', '@truefoundry/trueforge@latest'], { shell: process.platform === 'win32', windowsHide: true });
+      this.spawned = spawn('npx', ['--yes', '@truefoundry/trueforge@latest'], {
+        shell: process.platform === 'win32', windowsHide: true,
+        env: { ...process.env, OUTBOUND_URL_ALLOWED_HOSTS: JSON.stringify(['127.0.0.1', 'localhost']) }
+      });
       this.spawned.stdout?.on('data', (line) => this.options.log?.(`[trueforge] ${String(line).trim()}`));
       this.spawned.stderr?.on('data', (line) => this.options.log?.(`[trueforge] ${String(line).trim()}`));
       const deadline = Date.now() + 60_000;
