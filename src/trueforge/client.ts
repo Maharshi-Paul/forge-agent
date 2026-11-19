@@ -3,6 +3,7 @@ import { TrueForge } from '@truefoundry/trueforge-sdk';
 
 const DEFAULT_BASE_URL = 'http://localhost:8790';
 const PROVIDER_NAME = 'forge-proxy';
+const CONFIGURED_MODEL_NAME = 'chat-model';
 const MCP_SERVER_NAME = 'forge-workspace';
 
 export const FORGE_AGENT_INSTRUCTIONS = `You are a senior engineer working inside the user's VS Code workspace through the forge-workspace tools. Never ask the user which files to change: find them. Workflow: repo_map -> search for symbols and call sites -> read_range only what you need -> propose_edit for EVERY affected file (source, tests, docs) in as few edit calls as possible -> run_tests -> fix failures with more propose_edit calls -> finish with a short summary of what changed and why. Never paste whole files. Prefer many small precise edits over rewriting files. If a tool errors, read the error and retry with a corrected call.`;
@@ -43,7 +44,7 @@ export class TrueForgeClient {
       manifest: {
         type: 'custom', name: PROVIDER_NAME, baseUrl: proxyPort ? `http://127.0.0.1:${proxyPort}/v1` : upstream.baseUrl,
         auth: { apiKey: proxyPort ? 'forge-proxy' : upstream.apiKey },
-        models: [{ name: upstream.model, modelId: upstream.model, properties: {} }]
+        models: [{ name: CONFIGURED_MODEL_NAME, modelId: upstream.model, properties: {} }]
       }
     });
   }
@@ -58,7 +59,7 @@ export class TrueForgeClient {
   async createSession(upstream: DirectUpstream): Promise<string> {
     const client = await this.requireClient();
     const { data } = await client.sessions.create({ agent: { spec: {
-      model: { name: `${PROVIDER_NAME}/${upstream.model}` },
+      model: { name: `${PROVIDER_NAME}/${CONFIGURED_MODEL_NAME}` },
       instructions: FORGE_AGENT_INSTRUCTIONS,
       mcpServers: [{ name: MCP_SERVER_NAME, enableTools: ['@all'], requireApprovalForTools: [] }]
     } } });
