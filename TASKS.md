@@ -1,63 +1,97 @@
-# Flask tasks (pallets/flask)
+# Flask tasks (pallets/flask 3.1.3)
 
-These are the three fixed tasks from the Forge-a-thon Round 1 problem statement.
-Paste the official wording exactly as given. Do not paraphrase or invent tasks.
+These are the fixed Round 1 tasks from the competition brief. The demo repository
+must be `pallets/flask` release tag `3.1.3` at commit `22d92470`.
 
-Target repo: https://github.com/pallets/flask (clone into `flask/`, which is gitignored)
-
----
-
-## Task 1
-
-### Official task statement
-<PASTE THE OFFICIAL TEXT HERE>
-
-### Expected result
-<What should change: which files/areas, what behaviour. Fill in after reading the task.>
-
-### How to verify
-<Test command, e.g. `pytest tests/test_xxx.py`, or what to check by hand.>
-
-### Status
-- [ ] Run end to end through the extension
-- [ ] Hunks reviewed (accept/reject demonstrated)
-- [ ] Tests pass
-- Notes: <what failed, what was tuned>
+Run `npm run demo:setup` to create the ignored `flask/` demo workspace.
 
 ---
 
-## Task 2
+## Task A - Inline edit (single file)
 
-### Official task statement
-<PASTE THE OFFICIAL TEXT HERE>
+### Exact instruction to give the agent
+
+Open `src/flask/helpers.py`, select the function `get_debug_flag`, and instruct:
+
+> Treat the values 'off' and 'n' as false as well, case-insensitively, and update the docstring to list every value that is treated as false.
 
 ### Expected result
-<...>
+
+`get_debug_flag` treats `off` and `n` as false without changing the existing
+behaviour for `0`, `false`, `no`, or other values. The proposed diff is reviewed
+and accepted before the file is written.
 
 ### How to verify
-<...>
+
+```powershell
+$env:FLASK_DEBUG = 'off'
+python -c "from flask.helpers import get_debug_flag; print(get_debug_flag())"
+# False
+```
 
 ### Status
+
 - [ ] Run end to end through the extension
-- [ ] Hunks reviewed (accept/reject demonstrated)
-- [ ] Tests pass
-- Notes: <...>
+- [ ] Hunk reviewed and accepted
+- [ ] Verification shown on screen
 
 ---
 
-## Task 3
+## Task B - Agent mode (three or more files, none named)
 
-### Official task statement
-<PASTE THE OFFICIAL TEXT HERE>
+### Exact instruction to give the agent
+
+In the agent panel, with no files mentioned, instruct:
+
+> Add a new built-in CLI command flask config that prints the loaded application's configuration as JSON, masking the values of any key containing SECRET, PASSWORD, TOKEN or KEY as "***". It must appear in flask --help, be covered by a test, and be documented alongside the other built-in commands.
 
 ### Expected result
-<...>
+
+The agent discovers and proposes changes to at least three files (implementation,
+test, and documentation), without being told their paths. Review and accept the
+hunks, then briefly show the TrueForge session and tool calls.
 
 ### How to verify
-<...>
+
+```powershell
+pytest tests/test_cli.py -q
+flask --help
+flask config
+```
+
+Show the passing test suite, the `config` command in help, and masked JSON.
 
 ### Status
+
 - [ ] Run end to end through the extension
-- [ ] Hunks reviewed (accept/reject demonstrated)
+- [ ] Three or more files discovered unprompted
+- [ ] Hunks reviewed and accepted
 - [ ] Tests pass
-- Notes: <...>
+
+---
+
+## Task C - Resilience
+
+### Exact instruction to give the agent
+
+Configure TrueForge with an unreachable endpoint or an invalid key, then repeat
+Task A.
+
+### Expected result
+
+The editor stays responsive, visibly reports the failure or automatically moves to
+the configured fallback model, and does not silently write any files.
+
+### How to verify
+
+```powershell
+git status --short
+```
+
+The Flask working tree remains clean after the failed or rerouted turn.
+
+### Status
+
+- [ ] Run end to end through the extension
+- [ ] Primary failure and fallback shown
+- [ ] Workspace remains clean

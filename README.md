@@ -82,6 +82,7 @@ On the first request, TrueForge is downloaded and started locally at `http://loc
 npm run build    # bundle the extension
 npm run watch    # rebuild on source changes
 npm test         # tests without model credentials
+npm run demo:setup # clone and pin pallets/flask for the fixed-task demo
 npm run package  # create a VSIX package
 ```
 
@@ -105,4 +106,4 @@ npm run package  # create a VSIX package
 
 ## Prototype status
 
-This repository is an architecture prototype, not a production-ready coding agent. See [architecture](docs/architecture.md), [scaling](SCALING.md), and [task scope](docs/task-log.md) for component details, limits, and planned hardening.
+This repository is an architecture prototype, not a production-ready coding agent. See [architecture](docs/architecture.md), [scaling](SCALING.md), the [fixed tasks](TASKS.md), and the [demo runbook](docs/demo-runbook.md) for component details, limits, and planned hardening.

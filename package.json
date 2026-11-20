@@ -50,6 +50,7 @@
     "build": "node esbuild.js",
     "watch": "node esbuild.js --watch",
     "test": "vitest run",
+    "demo:setup": "node scripts/demo-setup.js",
     "package": "npm run build && vsce package --no-dependencies"
   },
   "devDependencies": {

@@ -1,0 +1,16 @@
+{
+  "forge.upstreams": [
+    {
+      "name": "primary",
+      "baseUrl": "https://provider.example/v1",
+      "model": "your-primary-model",
+      "secretKey": "FORGE_PRIMARY_API_KEY"
+    },
+    {
+      "name": "fallback",
+      "baseUrl": "https://provider.example/v1",
+      "model": "your-fallback-model",
+      "secretKey": "FORGE_FALLBACK_API_KEY"
+    }
+  ]
+}
