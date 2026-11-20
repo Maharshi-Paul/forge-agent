@@ -71,6 +71,7 @@ On the first request, TrueForge is downloaded and started locally at `http://loc
 | Command | Purpose |
 | --- | --- |
 | **Forge: Open Chat** | Opens the prompt input and starts an agent turn. |
+| **Forge: Inline Edit Selection** | Sends the current editor selection and an instruction through TrueForge (`Ctrl+I` / `Cmd+I`). |
 | **Forge: Stop** | Cancels the active TrueForge session turn. |
 | **Forge: Review Changes** | Opens proposed file changes for hunk-by-hunk review. |
 | **Forge: Break Primary Model** | Toggles primary-proxy fault injection for failover testing. |

@@ -17,6 +17,7 @@
   ],
   "activationEvents": [
     "onCommand:forge.openChat",
+    "onCommand:forge.inlineEdit",
     "onCommand:forge.reviewChanges",
     "onCommand:forge.breakPrimary"
   ],
@@ -26,6 +27,10 @@
       {
         "command": "forge.openChat",
         "title": "Forge: Open Chat"
+      },
+      {
+        "command": "forge.inlineEdit",
+        "title": "Forge: Inline Edit Selection"
       },
       {
         "command": "forge.reviewChanges",
@@ -42,6 +47,14 @@
       {
         "command": "forge.configureSecret",
         "title": "Forge: Configure API Key"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "forge.inlineEdit",
+        "key": "ctrl+i",
+        "mac": "cmd+i",
+        "when": "editorTextFocus && editorHasSelection"
       }
     ],
     "configuration": { "title": "Forge Agent", "properties": { "forge.upstreams": { "type": "array", "default": [], "description": "Ordered OpenAI-compatible upstreams. Each item has name, baseUrl, model, and a SecretStorage secretKey.", "items": { "type": "object", "required": ["name", "baseUrl", "model", "secretKey"], "properties": { "name": { "type": "string" }, "baseUrl": { "type": "string" }, "model": { "type": "string" }, "secretKey": { "type": "string" } } } } } }

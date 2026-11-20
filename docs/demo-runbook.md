@@ -17,8 +17,9 @@ offers two usable models.
 Record these scenes in order. Waiting time may be removed, but do not cut from an
 instruction to its diff.
 
-1. **Task A (0:00-0:55):** open and select `get_debug_flag`, run the exact Task A
-   instruction, accept the hunk, then show `FLASK_DEBUG=off` returning `False`.
+1. **Task A (0:00-0:55):** open and select `get_debug_flag`, press `Ctrl+I` (or
+   `Cmd+I`), run the exact Task A instruction, accept the hunk, then show
+   `FLASK_DEBUG=off` returning `False`.
 2. **Task B (0:55-2:35):** open Forge chat in the Flask workspace and paste the
    exact Task B instruction without mentioning paths. Show the Output Channel
    tools, the TrueForge session, the three-file review, `pytest tests/test_cli.py
